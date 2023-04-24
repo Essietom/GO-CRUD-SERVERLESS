@@ -1,0 +1,49 @@
+service: go-crud-serverless
+
+frameworkVersion: '>=2.0.0'
+
+provider:
+  name: aws
+  runtime: runtime: go1.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - rds:*
+      Resource: "*"
+
+  environment:
+    PG_HOST: ${file(./config/envVars.js):getEnvVars.pg_host}
+    PG_DB : ${file(./config/envVars.js):getEnvVars.pg_db}
+    PG_PORT: ${file(./config/envVars.js):getEnvVars.pg_port}
+    PG_USER: ${file(./config/envVars.js):getEnvVars.pg_user}
+    PG_PASSWORD: ${file(./config/envVars.js):getEnvVars.pg_password}
+    
+functions:
+  getall:
+    handler: handlers/list.pins
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+  create:
+    handler: handlers/create.pin
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+  update:
+    handler: handlers/update.pin
+    events:
+      - http:
+          path: users/{id}
+          method: put
+          cors: true
+  delete:
+    handler: handlers/delete.pin
+    events:
+      - http:
+          path: users/{id}
+          method: delete
+          cors: true
